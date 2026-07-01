@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MOVA — Turismo em Ibitirama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde: #214C3A;
+  --verde-escuro: #16352A;
+  --verde-claro: #2E6B51;
+  --areia: #F2EDE4;
+  --areia-escura: #E7DFD0;
+  --terracota: #C45A2C;
+  --terracota-escura: #A6491F;
+  --grafite: #1A1A1A;
+  --branco: #FFFFFF;
+  --linha: rgba(26,26,26,0.09);
+  --sombra: 0 10px 30px rgba(22,53,42,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Manrope',sans-serif;
+  background:var(--areia);
+  color:var(--grafite);
+  -webkit-font-smoothing:antialiased;
+  min-height:100svh;
+}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+input,textarea,select{font-family:inherit;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--terracota);color:var(--branco);}
+:focus-visible{outline:2px solid var(--terracota);outline-offset:2px;}
+.hide{display:none !important;}
+
+/* ---------- APP SHELL ---------- */
+#app{
+  max-width:1180px;
+  margin:0 auto;
+  min-height:100svh;
+  position:relative;
+  padding-bottom:86px;
+}
+@media(min-width:900px){
+  #app{padding-bottom:0;padding-top:78px;}
+}
+
+/* top header (desktop + persistent brand bar) */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  background:rgba(242,237,228,0.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--linha);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+}
+.topbar .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;letter-spacing:0.2px;color:var(--verde);}
+.topbar .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--terracota);}
+.topbar-actions{display:flex;align-items:center;gap:14px;}
+.topbar-user{font-size:13px;font-weight:700;color:var(--verde);display:flex;align-items:center;gap:8px;}
+.topbar-user .av{width:30px;height:30px;border-radius:50%;background:var(--verde);color:var(--branco);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+.desktop-links{display:none;gap:28px;}
+.desktop-links button{font-size:14px;font-weight:700;color:var(--grafite);opacity:0.55;padding:6px 0;border-bottom:2px solid transparent;transition:.2s;}
+.desktop-links button.active{opacity:1;color:var(--verde);border-color:var(--terracota);}
+@media(min-width:900px){
+  .desktop-links{display:flex;}
+}
+
+/* bottom tab nav (mobile/tablet) */
+.tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:60;
+  background:var(--branco);
+  border-top:1px solid var(--linha);
+  display:flex;
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  box-shadow:0 -6px 24px rgba(0,0,0,0.06);
+}
+@media(min-width:900px){ .tabbar{display:none;} }
+.tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:6px 2px;border-radius:14px;color:var(--grafite);opacity:0.45;
+  transition:.2s;
+}
+.tab.active{opacity:1;color:var(--verde);background:rgba(33,76,58,0.07);}
+.tab svg{width:21px;height:21px;}
+.tab span{font-size:10.5px;font-weight:700;letter-spacing:0.2px;}
+
+/* generic screen container */
+.screen{display:none;padding:20px 18px 28px;}
+.screen.active{display:block;}
+@media(min-width:900px){ .screen{padding:32px 36px 60px;} }
+
+.section-title{font-size:22px;font-weight:800;letter-spacing:-0.4px;color:var(--verde);margin-bottom:4px;}
+.section-sub{font-size:14px;color:rgba(26,26,26,0.6);margin-bottom:20px;line-height:1.5;}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--terracota);margin-bottom:8px;display:block;}
+
+.exemplo-tag{
+  display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  color:var(--terracota-escura);background:rgba(196,90,44,0.1);
+  padding:5px 10px;border-radius:100px;margin-bottom:14px;
+}
+
+/* ---------- AUTH SCREENS ----------
+   PERSONALIZE AQUI: estas variáveis controlam toda a tela de login/cadastro.
+   --auth-bg-image é definido via JS (Admin > Identidade visual) quando uma
+   foto de fundo é enviada; sem foto, usa o gradiente verde da marca. */
+:root{
+  --auth-bg-image: none;
+}
+.auth-wrap{
+  min-height:100dvh;
+  width:100%;
+  background:var(--auth-bg-image), linear-gradient(165deg,var(--verde) 0%, var(--verde-escuro) 100%);
+  background-size:cover;
+  background-position:center;
+  color:var(--branco);
+  display:flex;flex-direction:column;
+  position:relative;
+}
+.auth-wrap.has-photo::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(22,53,42,0.55) 0%, rgba(22,53,42,0.88) 78%, var(--verde-escuro) 100%);
+}
+.auth-hero{padding:48px 26px 64px;position:relative;z-index:1;flex-shrink:0;}
+.auth-mark{width:84px;height:auto;margin-bottom:18px;opacity:0.97;position:relative;display:block;}
+.auth-logo{font-size:32px;font-weight:800;letter-spacing:0.5px;margin-bottom:8px;position:relative;}
+.auth-logo span{color:var(--terracota);}
+.auth-tag{font-size:14px;color:rgba(255,255,255,0.82);max-width:320px;line-height:1.55;position:relative;}
+.auth-alt{
+  margin-top:22px;display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  border:1px solid rgba(255,255,255,0.3);padding:7px 14px;border-radius:100px;
+  color:rgba(255,255,255,0.9);position:relative;
+}
+.auth-card-wrap{
+  position:relative;z-index:1;flex:1;display:flex;flex-direction:column;
+  background:var(--areia);
+  border-radius:26px 26px 0 0;
+  box-shadow:0 -16px 40px rgba(0,0,0,0.18);
+}
+.auth-card{
+  color:var(--grafite);
+  padding:34px 28px 46px;
+  width:100%;
+}
+@media(min-width:560px){
+  .auth-card-wrap{max-width:472px;margin:0 auto;border-radius:26px;}
+}
+@media(min-width:900px){
+  .auth-wrap{
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    gap:80px;
+    padding:0 40px;
+  }
+  .auth-hero{
+    flex:0 1 420px;
+    padding:0;
+  }
+  .auth-card-wrap{
+    flex:0 0 auto;
+    margin:0;
+    box-shadow:var(--sombra);
+  }
+}
+.auth-tabs{display:flex;gap:6px;background:var(--areia-escura);padding:4px;border-radius:100px;margin-bottom:24px;}
+.auth-tabs button{flex:1;padding:10px 0;border-radius:100px;font-size:13px;font-weight:700;color:var(--grafite);opacity:0.55;transition:.2s;}
+.auth-tabs button.active{background:var(--branco);opacity:1;color:var(--verde);box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.auth-forms{position:relative;overflow:hidden;transition:height .28s ease;}
+.field{margin-bottom:16px;}
+.field label{font-size:12px;font-weight:700;color:var(--verde);display:block;margin-bottom:7px;letter-spacing:0.2px;}
+.field input, .field textarea, .field select{
+  width:100%;padding:13px 15px;border-radius:13px;border:1.5px solid var(--linha);
+  background:var(--branco);font-size:14.5px;color:var(--grafite);transition:.2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus{border-color:var(--verde);outline:none;}
+.ig-gate{
+  background:var(--branco);border:1.5px solid var(--linha);border-radius:16px;padding:16px;margin:6px 0 20px;
+}
+.ig-gate-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ig-gate-icon{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,#C45A2C,#214C3A);
+  display:flex;align-items:center;justify-content:center;
+}
+.ig-gate-icon svg{width:19px;height:19px;color:var(--branco);}
+.ig-gate-text strong{display:block;font-size:13.5px;}
+.ig-gate-text span{font-size:12px;color:rgba(26,26,26,0.6);}
+.ig-follow-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;width:100%;
+  padding:11px;border-radius:11px;background:var(--areia-escura);
+  font-size:13px;font-weight:700;color:var(--grafite);margin-bottom:10px;
+}
+.ig-confirm{display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:rgba(26,26,26,0.75);}
+.ig-confirm input{margin-top:3px;width:17px;height:17px;accent-color:var(--terracota);flex-shrink:0;}
+
+.btn-primary{
+  width:100%;background:var(--terracota);color:var(--branco);
+  padding:15px 0;border-radius:13px;font-size:14.5px;font-weight:700;letter-spacing:0.2px;
+  transition:.2s;
+}
+.btn-primary:hover{background:var(--terracota-escura);}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-secondary{
+  width:100%;background:var(--branco);color:var(--verde);border:1.5px solid var(--verde);
+  padding:13px 0;border-radius:13px;font-size:14px;font-weight:700;
+}
+.btn-ghost-sm{font-size:12.5px;font-weight:700;color:var(--verde);text-decoration:underline;text-underline-offset:3px;}
+.auth-error{
+  background:rgba(196,90,44,0.1);color:var(--terracota-escura);font-size:12.5px;font-weight:600;
+  padding:10px 13px;border-radius:10px;margin-bottom:14px;display:none;
+}
+.auth-error.show{display:block;}
+.admin-entry{text-align:center;margin-top:22px;}
+.admin-entry button{font-size:11.5px;color:rgba(26,26,26,0.4);font-weight:600;}
+
+/* ---------- HOME ---------- */
+.home-hero{
+  background:linear-gradient(160deg,var(--verde) 0%, var(--verde-escuro) 100%);
+  color:var(--branco);border-radius:22px;padding:26px 22px;margin-bottom:26px;position:relative;overflow:hidden;
+}
+.home-hero::after{content:'';position:absolute;right:-40px;bottom:-50px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(196,90,44,0.3),transparent 70%);}
+.home-hero h1{font-size:23px;font-weight:800;letter-spacing:-0.3px;line-height:1.25;margin-bottom:8px;position:relative;max-width:280px;}
+.home-hero p{font-size:13px;color:rgba(255,255,255,0.78);max-width:300px;margin-bottom:16px;position:relative;}
+.home-hero .alt{position:relative;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.55);}
+.home-hero .alt b{color:var(--terracota);font-size:13px;}
+
+.cat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:30px;
+}
+@media(min-width:600px){ .cat-grid{grid-template-columns:repeat(5,1fr);} }
+.cat-card{
+  background:var(--branco);border-radius:16px;padding:16px 8px;text-align:center;
+  border:1px solid var(--linha);transition:.2s;position:relative;overflow:hidden;
+}
+.cat-card:hover{border-color:var(--verde);transform:translateY(-2px);}
+.cat-card .ic{
+  width:38px;height:38px;border-radius:11px;background:var(--areia-escura);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 9px;color:var(--verde);
+}
+.cat-card .ic svg{width:18px;height:18px;}
+.cat-card span{font-size:11.5px;font-weight:700;line-height:1.25;display:block;position:relative;z-index:2;}
+.cat-card.has-photo{
+  padding:0;height:104px;display:flex;align-items:flex-end;justify-content:center;border:none;
+}
+.cat-card.has-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
+.cat-card.has-photo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(22,53,42,0.78) 100%);z-index:1;}
+.cat-card.has-photo span{color:var(--branco);padding:0 6px 12px;}
+
+.ai-banner{
+  background:var(--terracota);color:var(--branco);border-radius:18px;padding:20px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:30px;cursor:pointer;
+  transition:.2s;
+}
+.ai-banner:hover{background:var(--terracota-escura);}
+.ai-banner-text strong{display:block;font-size:15px;margin-bottom:3px;}
+.ai-banner-text span{font-size:12px;color:rgba(255,255,255,0.85);}
+.ai-banner svg{width:24px;height:24px;flex-shrink:0;}
+
+.row-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;}
+.row-head h2{font-size:16px;font-weight:800;color:var(--verde);}
+.row-head button{font-size:12px;font-weight:700;color:var(--terracota);}
+
+.place-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;margin-bottom:32px;scrollbar-width:none;}
+.place-scroll::-webkit-scrollbar{display:none;}
+.place-scroll .place-card{min-width:230px;}
+
+.place-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:640px){ .place-grid{grid-template-columns:repeat(2,1fr);} }
+@media(min-width:980px){ .place-grid{grid-template-columns:repeat(3,1fr);} }
+
+.place-card{
+  background:var(--branco);border-radius:18px;overflow:hidden;border:1px solid var(--linha);
+  transition:.2s;cursor:pointer;
+}
+.place-card:hover{box-shadow:var(--sombra);transform:translateY(-2px);}
+.place-img{
+  height:140px;position:relative;display:flex;align-items:flex-end;
+  background:linear-gradient(135deg,var(--verde-claro),var(--verde-escuro));
+}
+.place-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.place-img .cat-chip{
+  position:relative;z-index:2;margin:10px;font-size:10.5px;font-weight:700;letter-spacing:0.3px;
+  color:var(--branco);background:rgba(0,0,0,0.32);backdrop-filter:blur(4px);
+  padding:5px 10px;border-radius:100px;
+}
+.selo-card{
+  position:absolute;top:8px;right:8px;z-index:2;width:36px;height:36px;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+}
+.selo-card svg{width:100%;height:100%;}
+.place-body{padding:14px;}
+.place-body h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+.place-body p{font-size:12.5px;color:rgba(26,26,26,0.6);line-height:1.4;margin-bottom:10px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.place-meta{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;color:var(--verde);}
+.stars{display:inline-flex;gap:1px;color:var(--terracota);}
+.stars svg{width:13px;height:13px;}
+
+.search-bar{display:flex;gap:10px;margin-bottom:22px;}
+.search-bar input{
+  flex:1;padding:13px 16px;border-radius:13px;border:1.5px solid var(--linha);background:var(--branco);font-size:14px;
+}
+.filter-chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:22px;scrollbar-width:none;}
+.filter-chips::-webkit-scrollbar{display:none;}
+.filter-chip{
+  flex-shrink:0;padding:9px 16px;border-radius:100px;background:var(--branco);border:1.5px solid var(--linha);
+  font-size:12.5px;font-weight:700;color:var(--grafite);transition:.2s;
+}
+.filter-chip.active{background:var(--verde);color:var(--branco);border-color:var(--verde);}
+
+.empty-state{text-align:center;padding:50px 20px;color:rgba(26,26,26,0.45);}
+.empty-state svg{width:46px;height:46px;margin:0 auto 14px;opacity:0.4;}
+.empty-state p{font-size:13.5px;max-width:260px;margin:0 auto;line-height:1.5;}
+
+/* ---------- PLACE DETAIL ---------- */
+.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--verde);margin-bottom:16px;}
+.detail-back svg{width:16px;height:16px;}
+.gallery{display:flex;gap:8px;overflow-x:auto;border-radius:18px;margin-bottom:18px;scrollbar-width:none;}
+.gallery::-webkit-scrollbar{display:none;}
+.gallery .g-img{
+  min-width:85%;height:230px;border-radius:18px;flex-shrink:0;scroll-snap-align:start;
+  background:linear-gradient(135deg,var(--verde-claro),var(--verde-escuro));position:relative;overflow:hidden;
+}
+.gallery .g-img img{width:100%;height:100%;object-fit:cover;}
+.gallery{scroll-snap-type:x mandatory;}
+.detail-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.detail-title-row h1{font-size:22px;font-weight:800;color:var(--grafite);}
+.detail-badges{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.badge{font-size:11px;font-weight:700;padding:5px 11px;border-radius:100px;}
+.badge.cat{background:var(--areia-escura);color:var(--verde);}
+.selo-inline{
+  display:flex;align-items:center;gap:8px;background:rgba(196,90,44,0.08);
+  border:1px solid rgba(196,90,44,0.25);padding:5px 12px 5px 5px;border-radius:100px;
+}
+.selo-inline .selo-ic{width:22px;height:22px;flex-shrink:0;}
+.selo-inline span{font-size:11.5px;font-weight:700;color:var(--terracota-escura);}
+.detail-rating{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+.detail-rating .num{font-size:16px;font-weight:800;}
+.detail-rating .count{font-size:12.5px;color:rgba(26,26,26,0.55);}
+.detail-desc{font-size:14.5px;line-height:1.65;color:rgba(26,26,26,0.78);margin-bottom:24px;}
+.detail-actions{display:flex;gap:10px;margin-bottom:30px;}
+.detail-actions .btn-primary{flex:2;display:flex;align-items:center;justify-content:center;gap:8px;}
+.detail-actions .btn-icon{
+  flex:1;display:flex;align-items:center;justify-content:center;background:var(--branco);
+  border:1.5px solid var(--linha);border-radius:13px;color:var(--verde);
+}
+.detail-actions .btn-icon svg{width:19px;height:19px;}
+
+.card-block{background:var(--branco);border:1px solid var(--linha);border-radius:18px;padding:18px;margin-bottom:18px;}
+.card-block h3{font-size:14px;font-weight:800;margin-bottom:12px;color:var(--verde);}
+
+.rate-stars{display:flex;gap:6px;margin-bottom:14px;}
+.rate-stars button{padding:2px;}
+.rate-stars svg{width:26px;height:26px;color:var(--areia-escura);transition:.15s;}
+.rate-stars button.sel svg, .rate-stars button:hover svg{color:var(--terracota);}
+.review-item{padding:12px 0;border-top:1px solid var(--linha);}
+.review-item:first-child{border-top:none;padding-top:0;}
+.review-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.review-top strong{font-size:13px;}
+.review-item p{font-size:13px;color:rgba(26,26,26,0.65);line-height:1.5;}
+.review-item .stars svg{width:11px;height:11px;}
+
+/* ---------- AI ROTEIRO ---------- */
+.quiz-progress{display:flex;gap:6px;margin-bottom:26px;}
+.quiz-progress span{flex:1;height:4px;border-radius:100px;background:var(--areia-escura);}
+.quiz-progress span.done{background:var(--terracota);}
+.quiz-step{display:none;}
+.quiz-step.active{display:block;}
+.quiz-q{font-size:19px;font-weight:800;color:var(--verde);margin-bottom:18px;line-height:1.3;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.quiz-opt{
+  background:var(--branco);border:1.5px solid var(--linha);border-radius:16px;padding:18px 12px;text-align:center;
+  transition:.2s;
+}
+.quiz-opt .ic{font-size:24px;margin-bottom:8px;display:block;}
+.quiz-opt span{font-size:12.5px;font-weight:700;}
+.quiz-opt.sel{border-color:var(--terracota);background:rgba(196,90,44,0.06);}
+.quiz-opt:hover{border-color:var(--verde);}
+.quiz-nav{display:flex;gap:10px;}
+.ai-loading{text-align:center;padding:50px 20px;}
+.ai-spinner{
+  width:42px;height:42px;border-radius:50%;border:3px solid var(--areia-escura);border-top-color:var(--terracota);
+  margin:0 auto 18px;animation:spin 0.9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-loading p{font-size:13.5px;color:rgba(26,26,26,0.55);}
+.itinerary-list{counter-reset:step;}
+.itin-item{
+  display:flex;gap:14px;background:var(--branco);border:1px solid var(--linha);border-radius:16px;padding:16px;margin-bottom:12px;
+  cursor:pointer;transition:.2s;
+}
+.itin-item:hover{border-color:var(--verde);}
+.itin-num{
+  width:30px;height:30px;border-radius:50%;background:var(--verde);color:var(--branco);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;
+}
+.itin-body h4{font-size:14.5px;font-weight:800;margin-bottom:4px;}
+.itin-body p{font-size:12.5px;color:rgba(26,26,26,0.6);line-height:1.45;margin-bottom:6px;}
+.itin-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.itin-meta span{font-size:10.5px;font-weight:700;color:var(--verde);background:var(--areia-escura);padding:3px 9px;border-radius:100px;}
+.itin-dica{font-size:11.5px;color:var(--terracota-escura);background:rgba(196,90,44,0.08);padding:7px 10px;border-radius:9px;line-height:1.4;}
+.itin-total{font-size:12px;font-weight:700;color:rgba(26,26,26,0.55);margin-bottom:16px;text-align:center;}
+.itin-intro{background:var(--areia-escura);border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.55;color:var(--grafite);margin-bottom:18px;}
+
+/* ---------- PERFIL ---------- */
+.profile-head{display:flex;align-items:center;gap:14px;margin-bottom:26px;}
+.profile-av{width:58px;height:58px;border-radius:50%;background:var(--verde);color:var(--branco);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;}
+.profile-head h2{font-size:18px;font-weight:800;}
+.profile-head span{font-size:12.5px;color:rgba(26,26,26,0.55);}
+.menu-list{background:var(--branco);border:1px solid var(--linha);border-radius:18px;overflow:hidden;margin-bottom:18px;}
+.menu-item{
+  display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--linha);font-size:14px;font-weight:600;
+}
+.menu-item:last-child{border-bottom:none;}
+.menu-item .ic{width:34px;height:34px;border-radius:10px;background:var(--areia-escura);display:flex;align-items:center;justify-content:center;color:var(--verde);flex-shrink:0;}
+.menu-item .ic svg{width:16px;height:16px;}
+.menu-item svg.chev{margin-left:auto;width:16px;height:16px;opacity:0.3;}
+
+.partner-cta{
+  background:linear-gradient(135deg,var(--verde),var(--verde-escuro));color:var(--branco);
+  border-radius:20px;padding:22px;margin-bottom:18px;position:relative;overflow:hidden;
+}
+.partner-cta::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(196,90,44,0.3),transparent 70%);}
+.partner-cta h3{font-size:16px;font-weight:800;margin-bottom:8px;position:relative;}
+.partner-cta p{font-size:12.5px;color:rgba(255,255,255,0.8);line-height:1.5;margin-bottom:16px;position:relative;max-width:320px;}
+.partner-cta .btn-primary{position:relative;width:auto;padding:11px 22px;display:inline-block;}
+
+/* ---------- MODALS ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(22,30,26,0.55);backdrop-filter:blur(3px);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+@media(min-width:600px){.modal-overlay{align-items:center;}}
+.modal-overlay.hide{display:none;}
+.modal{
+  background:var(--areia);border-radius:24px 24px 0 0;padding:26px 22px;width:100%;max-width:480px;
+  max-height:88svh;overflow-y:auto;
+}
+@media(min-width:600px){.modal{border-radius:22px;}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.modal-head h2{font-size:17px;font-weight:800;color:var(--verde);}
+.modal-close{width:30px;height:30px;border-radius:50%;background:var(--branco);display:flex;align-items:center;justify-content:center;}
+.modal-close svg{width:14px;height:14px;}
+
+/* ---------- ADMIN ---------- */
+.admin-shell{background:var(--grafite);min-height:100svh;color:var(--branco);}
+.admin-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.admin-top .brand{font-weight:800;font-size:17px;}
+.admin-top .brand span{color:var(--terracota);}
+
+/* ---------- WORDMARK "MOVA" ----------
+   Usar sempre que o nome MOVA aparecer como título/logo: peso leve,
+   tracking mais aberto, e o "A" como um pico (sem traço central),
+   ecoando o ícone de montanha da marca. */
+.auth-logo, .topbar .brand, .admin-top .brand{
+  font-weight:300;
+  letter-spacing:0.07em;
+}
+.auth-logo span, .admin-top .brand span{
+  color:var(--branco);
+  font-weight:300;
+}
+.topbar .brand span{
+  color:inherit;
+  font-weight:300;
+}
+.admin-logout{font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);}
+.admin-body{padding:20px;max-width:1100px;margin:0 auto;}
+.admin-tabs{display:flex;gap:8px;margin-bottom:22px;overflow-x:auto;}
+.admin-tabs button{
+  padding:9px 16px;border-radius:100px;font-size:12.5px;font-weight:700;background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.6);flex-shrink:0;
+}
+.admin-tabs button.active{background:var(--terracota);color:var(--branco);}
+.admin-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+@media(min-width:700px){.admin-stats{grid-template-columns:repeat(4,1fr);}}
+.stat-card{background:rgba(255,255,255,0.06);border-radius:16px;padding:16px;}
+.stat-card .num{font-size:24px;font-weight:800;}
+.stat-card .lbl{font-size:11.5px;color:rgba(255,255,255,0.55);margin-top:4px;}
+.admin-panel{display:none;}
+.admin-panel.active{display:block;}
+.admin-list-item{
+  display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.05);border-radius:14px;padding:13px;margin-bottom:10px;
+}
+.admin-list-item .thumb{
+  width:50px;height:50px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--verde-claro),var(--verde-escuro));
+  overflow:hidden;
+}
+.admin-list-item .thumb img{width:100%;height:100%;object-fit:cover;}
+.admin-list-item .info{flex:1;min-width:0;}
+.admin-list-item .info strong{font-size:13.5px;display:block;}
+.admin-list-item .info span{font-size:11.5px;color:rgba(255,255,255,0.5);}
+.admin-list-item .acts{display:flex;gap:8px;}
+.admin-list-item .acts button{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;}
+.admin-list-item .acts button svg{width:14px;height:14px;}
+.admin-add-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:13px;
+  background:var(--terracota);color:var(--branco);font-size:13.5px;font-weight:700;margin-bottom:20px;
+}
+.admin-form .field label{color:rgba(255,255,255,0.7);}
+.admin-form .field input, .admin-form .field textarea, .admin-form .field select{
+  background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:var(--branco);
+}
+.admin-form .field select option{color:var(--grafite);}
+.photo-upload-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.photo-thumb{width:64px;height:64px;border-radius:11px;overflow:hidden;position:relative;background:rgba(255,255,255,0.07);}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;}
+.photo-thumb button{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;}
+.photo-thumb button svg{width:9px;height:9px;color:#fff;}
+.photo-add{width:64px;height:64px;border-radius:11px;border:1.5px dashed rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);}
+.photo-add svg{width:18px;height:18px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);padding:13px 15px;border-radius:13px;margin-bottom:16px;}
+.toggle-row span{font-size:13.5px;font-weight:600;}
+.switch{width:42px;height:24px;border-radius:100px;background:rgba(255,255,255,0.15);position:relative;flex-shrink:0;transition:.2s;}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--branco);transition:.2s;}
+.switch.on{background:var(--terracota);}
+.switch.on::after{transform:translateX(18px);}
+
+.toast{
+  position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--grafite);color:var(--branco);
+  padding:12px 22px;border-radius:100px;font-size:13px;font-weight:600;z-index:300;opacity:0;pointer-events:none;
+  transition:.25s;display:flex;align-items:center;gap:8px;
+}
+@media(min-width:900px){ .toast{bottom:30px;} }
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+.toast svg{width:15px;height:15px;color:var(--terracota);flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div id="authScreen">
+  <div class="auth-wrap" id="authWrap">
+    <div class="auth-hero">
+      <img class="auth-mark" src="data:image/png;base64,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" alt="MOVA">
+      <div class="auth-logo">MOV<span>Λ</span></div>
+      <p class="auth-tag">Movimento que valoriza o turismo local. Descubra Ibitirama por quem vive aqui.</p>
+      <div class="auth-alt">2892m · Pico da Bandeira</div>
+    </div>
+    <div class="auth-card-wrap">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="tabLoginBtn" class="active" onclick="switchAuthTab('login')">Entrar</button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')">Criar conta</button>
+      </div>
+
+      <div class="auth-forms" id="authForms">
+      <div id="loginForm" class="auth-form">
+        <div class="auth-error" id="loginError"></div>
+        <div class="field"><label>E-mail</label><input type="email" id="loginEmail" placeholder="seu@email.com"></div>
+        <div class="field"><label>Senha</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+        <button class="btn-primary" onclick="doLogin()">Entrar</button>
+      </div>
+
+      <div id="registerForm" class="auth-form hide">
+        <div class="auth-error" id="registerError"></div>
+        <div class="field"><label>Nome</label><input type="text" id="regName" placeholder="Seu nome"></div>
+        <div class="field"><label>E-mail</label><input type="email" id="regEmail" placeholder="seu@email.com"></div>
+        <div class="field"><label>Senha</label><input type="password" id="regPass" placeholder="Crie uma senha"></div>
+
+        <div class="ig-gate">
+          <div class="ig-gate-top">
+            <div class="ig-gate-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="white" stroke-width="1.7"/><circle cx="12" cy="12" r="4" stroke="white" stroke-width="1.7"/><circle cx="17.3" cy="6.7" r="1" fill="white"/></svg></div>
+            <div class="ig-gate-text"><strong>Siga a MOVA no Instagram</strong><span>@mova.eco · obrigatório para criar conta</span></div>
+          </div>
+          <a class="ig-follow-btn" href="https://instagram.com/mova.eco" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></svg>
+            Abrir @mova.eco
+          </a>
+          <label class="ig-confirm">
+            <input type="checkbox" id="igConfirm" onchange="toggleRegisterBtn()">
+            Confirmo que já sigo a MOVA (@mova.eco) no Instagram.
+          </label>
+        </div>
+
+        <button class="btn-primary" id="registerBtn" disabled onclick="doRegister()">Criar minha conta</button>
+      </div>
+      </div>
+
+      <div class="admin-entry"><button onclick="openAdminLogin()">Acesso administrativo</button></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN APP ============ -->
+<div id="mainApp" class="hide">
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span>MOV<span>Λ</span></div>
+    <nav class="desktop-links">
+      <button class="dlink active" data-screen="home" onclick="goScreen('home')">Início</button>
+      <button class="dlink" data-screen="explore" onclick="goScreen('explore')">Explorar</button>
+      <button class="dlink" data-screen="ai" onclick="goScreen('ai')">Roteiro IA</button>
+      <button class="dlink" data-screen="profile" onclick="goScreen('profile')">Perfil</button>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-user"><div class="av" id="topAv">M</div><span id="topName"></span></div>
+    </div>
+  </header>
+
+  <div id="app">
+
+    <!-- HOME -->
+    <section class="screen active" id="screen-home">
+      <div class="home-hero">
+        <h1 id="homeGreeting">Boas-vindas a Ibitirama.</h1>
+        <p>Cachoeiras, trilhas, restaurantes e gente de verdade. Tudo num só lugar, valorizando quem constrói o turismo daqui.</p>
+        <div class="alt"><b>2892m</b> · Pico da Bandeira</div>
+      </div>
+
+      <div class="cat-grid" id="catGrid"></div>
+
+      <div class="ai-banner" onclick="goScreen('ai')">
+        <div class="ai-banner-text">
+          <strong>Roteiro feito pra você</strong>
+          <span>Responda 3 perguntas e receba um roteiro com ajuda de IA</span>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.5L19 10l-5.2 1.5L12 17l-1.8-5.5L5 10l5.2-1.5L12 3z" fill="white"/></svg>
+      </div>
+
+      <div class="row-head"><h2>Em destaque</h2><button onclick="goScreen('explore')">Ver tudo</button></div>
+      <div class="place-scroll" id="featuredScroll"></div>
+
+      <div class="row-head"><h2>Parceiros MOVA</h2><button onclick="filterAndGo('parceiro')">Ver tudo</button></div>
+      <div class="place-scroll" id="partnerScroll"></div>
+    </section>
+
+    <!-- EXPLORE / CATEGORY LIST -->
+    <section class="screen" id="screen-explore">
+      <span class="eyebrow" id="exploreEyebrow">Explorar</span>
+      <h1 class="section-title" id="exploreTitle">Todos os lugares</h1>
+      <p class="section-sub">Descubra o que Ibitirama tem pra te oferecer.</p>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Buscar por nome..." oninput="renderExploreList()">
+      </div>
+      <div class="filter-chips" id="filterChips"></div>
+      <div class="place-grid" id="exploreGrid"></div>
+    </section>
+
+    <!-- PLACE DETAIL -->
+    <section class="screen" id="screen-detail">
+      <button class="detail-back" onclick="goScreen('explore')"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Voltar</button>
+      <div id="detailContent"></div>
+    </section>
+
+    <!-- AI ITINERARY -->
+    <section class="screen" id="screen-ai">
+      <span class="eyebrow">Roteiro inteligente</span>
+      <h1 class="section-title">Vamos montar seu roteiro</h1>
+      <p class="section-sub">Responda algumas perguntas e a MOVA monta um roteiro personalizado com os lugares de Ibitirama.</p>
+
+      <div id="quizWrap">
+        <div class="quiz-progress"><span id="qp1"></span><span id="qp2"></span><span id="qp3"></span></div>
+
+        <div class="quiz-step active" id="quizStep1">
+          <div class="quiz-q">Com quem você está vindo?</div>
+          <div class="quiz-options" data-q="perfil">
+            <button class="quiz-opt" data-val="sozinho"><span class="ic">🧍</span><span>Sozinho(a)</span></button>
+            <button class="quiz-opt" data-val="casal"><span class="ic">💚</span><span>Casal</span></button>
+            <button class="quiz-opt" data-val="familia"><span class="ic">👨‍👩‍👧</span><span>Família</span></button>
+            <button class="quiz-opt" data-val="amigos"><span class="ic">🥾</span><span>Amigos</span></button>
+          </div>
+          <div class="quiz-nav"><button class="btn-primary" disabled id="next1" onclick="quizNext(2)">Continuar</button></div>
+        </div>
+
+        <div class="quiz-step" id="quizStep2">
+          <div class="quiz-q">O que mais te atrai em Ibitirama?</div>
+          <div class="quiz-options" data-q="interesse">
+            <button class="quiz-opt" data-val="natureza"><span class="ic">🏞️</span><span>Natureza e trilhas</span></button>
+            <button class="quiz-opt" data-val="gastronomia"><span class="ic">🍽️</span><span>Gastronomia local</span></button>
+            <button class="quiz-opt" data-val="aventura"><span class="ic">⛰️</span><span>Aventura e altitude</span></button>
+            <button class="quiz-opt" data-val="relaxar"><span class="ic">🌅</span><span>Calma e paisagem</span></button>
+          </div>
+          <div class="quiz-nav"><button class="btn-secondary" style="flex:1" onclick="quizNext(1)">Voltar</button><button class="btn-primary" style="flex:2" disabled id="next2" onclick="quizNext(3)">Continuar</button></div>
+        </div>
+
+        <div class="quiz-step" id="quizStep3">
+          <div class="quiz-q">Quanto tempo você tem em Ibitirama?</div>
+          <div class="quiz-options" data-q="tempo">
+            <button class="quiz-opt" data-val="meio-dia"><span class="ic">⏱️</span><span>Meio dia</span></button>
+            <button class="quiz-opt" data-val="um-dia"><span class="ic">📅</span><span>Um dia inteiro</span></button>
+            <button class="quiz-opt" data-val="fim-de-semana"><span class="ic">🗓️</span><span>Fim de semana</span></button>
+            <button class="quiz-opt" data-val="mais-tempo"><span class="ic">🏕️</span><span>Mais de 3 dias</span></button>
+          </div>
+          <div class="quiz-nav"><button class="btn-secondary" style="flex:1" onclick="quizNext(2)">Voltar</button><button class="btn-primary" style="flex:2" disabled id="next3" onclick="generateItinerary()">Gerar roteiro</button></div>
+        </div>
+      </div>
+
+      <div id="aiLoading" class="ai-loading hide">
+        <div class="ai-spinner"></div>
+        <p>Montando seu roteiro pela MOVA...</p>
+      </div>
+
+      <div id="aiResult" class="hide">
+        <div class="itin-intro" id="itinIntro"></div>
+        <div class="itin-total" id="itinTotal"></div>
+        <div class="itinerary-list" id="itinList"></div>
+        <button class="btn-secondary" onclick="resetQuiz()" style="margin-top:6px;">Refazer roteiro</button>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="screen" id="screen-profile">
+      <div class="profile-head">
+        <div class="profile-av" id="profAv">M</div>
+        <div><h2 id="profName">Visitante</h2><span id="profEmail"></span></div>
+      </div>
+
+      <div class="partner-cta">
+        <h3>Tem um negócio em Ibitirama?</h3>
+        <p>Apareça pra turistas, ganhe avaliações e faça parte da rede MOVA de empreendedores locais.</p>
+        <button class="btn-primary" onclick="openPartnerModal()">Quero ser parceiro MOVA</button>
+      </div>
+
+      <div class="menu-list">
+        <button class="menu-item" onclick="goScreen('explore')">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+          Explorar lugares
+          <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="menu-item" onclick="goScreen('ai')">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.5L19 10l-5.2 1.5L12 17l-1.8-5.5L5 10l5.2-1.5L12 3z" stroke="currentColor" stroke-width="1.5"/></svg></div>
+          Meu roteiro com IA
+          <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="menu-item" onclick="window.open('https://instagram.com/mova.eco','_blank')">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/></svg></div>
+          Seguir @mova.eco
+          <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="menu-item" onclick="doLogout()">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+          Sair da conta
+        </button>
+      </div>
+      <p style="font-size:11.5px;text-align:center;color:rgba(26,26,26,0.4);">MOVA · Ibitirama, Espírito Santo · @mova.eco</p>
+    </section>
+
+  </div>
+
+  <nav class="tabbar">
+    <button class="tab active" data-screen="home" onclick="goScreen('home')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 11l9-7 9 7M5 10v9a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span>Início</span>
+    </button>
+    <button class="tab" data-screen="explore" onclick="goScreen('explore')">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Explorar</span>
+    </button>
+    <button class="tab" data-screen="ai" onclick="goScreen('ai')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.5L19 10l-5.2 1.5L12 17l-1.8-5.5L5 10l5.2-1.5L12 3z" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Roteiro IA</span>
+    </button>
+    <button class="tab" data-screen="profile" onclick="goScreen('profile')">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Perfil</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ============ ADMIN LOGIN MODAL ============ -->
+<div class="modal-overlay hide" id="adminLoginModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Acesso administrativo</h2><button class="modal-close" onclick="closeModal('adminLoginModal')"><svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div class="auth-error" id="adminError"></div>
+    <div class="field"><label>Senha de administrador</label><input type="password" id="adminPass" placeholder="••••••••"></div>
+    <button class="btn-primary" onclick="doAdminLogin()">Entrar como admin</button>
+  </div>
+</div>
+
+<!-- ============ PARTNER REQUEST MODAL ============ -->
+<div class="modal-overlay hide" id="partnerModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Seja parceiro MOVA</h2><button class="modal-close" onclick="closeModal('partnerModal')"><svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <p style="font-size:13px;color:rgba(26,26,26,0.6);margin-bottom:18px;line-height:1.5;">Conte um pouco sobre seu negócio. A equipe MOVA entra em contato pra te incluir no app.</p>
+    <div class="field"><label>Nome do negócio</label><input type="text" id="pNome" placeholder="Ex: Restaurante da Serra"></div>
+    <div class="field"><label>Categoria</label>
+      <select id="pCategoria">
+        <option value="cachoeiras">Cachoeira</option>
+        <option value="trilhas">Trilha / Mirante</option>
+        <option value="restaurantes">Restaurante</option>
+        <option value="bares">Bar</option>
+        <option value="lanchonetes">Lanchonete</option>
+      </select>
+    </div>
+    <div class="field"><label>Contato (WhatsApp ou e-mail)</label><input type="text" id="pContato" placeholder="(28) 9...."></div>
+    <div class="field"><label>Conte sobre o seu negócio</label><textarea id="pMsg" rows="3" placeholder="O que vocês oferecem?"></textarea></div>
+    <button class="btn-primary" onclick="submitPartnerRequest()">Enviar solicitação</button>
+  </div>
+</div>
+
+<!-- ============ ADMIN PLACE FORM MODAL ============ -->
+<div class="modal-overlay hide" id="placeFormModal">
+  <div class="modal">
+    <div class="modal-head"><h2 id="placeFormTitle">Novo lugar</h2><button class="modal-close" onclick="closeModal('placeFormModal')"><svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div class="admin-form">
+      <input type="hidden" id="pfId">
+      <div class="field"><label>Categoria</label>
+        <select id="pfCategoria">
+          <option value="cachoeiras">Cachoeira</option>
+          <option value="trilhas">Trilha / Mirante</option>
+          <option value="restaurantes">Restaurante</option>
+          <option value="bares">Bar</option>
+          <option value="lanchonetes">Lanchonete</option>
+        </select>
+      </div>
+      <div class="field"><label>Nome</label><input type="text" id="pfNome" placeholder="Nome do lugar"></div>
+      <div class="field"><label>Descrição</label><textarea id="pfDesc" rows="3" placeholder="Descreva o lugar..."></textarea></div>
+      <div class="field"><label>Endereço / referência</label><input type="text" id="pfEndereco" placeholder="Ex: Estrada para o Caparaó, km 5"></div>
+      <div style="display:flex;gap:10px;">
+        <div class="field" style="flex:1"><label>Latitude</label><input type="text" id="pfLat" placeholder="-20.4923"></div>
+        <div class="field" style="flex:1"><label>Longitude</label><input type="text" id="pfLng" placeholder="-41.6722"></div>
+      </div>
+      <div class="field"><label>Fotos</label>
+        <div class="photo-upload-row" id="pfPhotosRow">
+          <label class="photo-add"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input type="file" accept="image/*" multiple onchange="addPhotos(event)" style="display:none"></label>
+        </div>
+      </div>
+      <div class="toggle-row" onclick="togglePartnerSwitch()">
+        <span>Marcar como Parceiro MOVA</span>
+        <div class="switch" id="pfPartnerSwitch"></div>
+      </div>
+      <button class="btn-primary" onclick="savePlace()">Salvar lugar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN SHELL ============ -->
+<div class="admin-shell hide" id="adminShell">
+  <div class="admin-top">
+    <div class="brand">MOV<span>Λ</span> <span style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;">admin</span></div>
+    <button class="admin-logout" onclick="doAdminLogout()">Sair</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-stats">
+      <div class="stat-card"><div class="num" id="statPlaces">0</div><div class="lbl">Lugares cadastrados</div></div>
+      <div class="stat-card"><div class="num" id="statUsers">0</div><div class="lbl">Contas criadas</div></div>
+      <div class="stat-card"><div class="num" id="statReviews">0</div><div class="lbl">Avaliações</div></div>
+      <div class="stat-card"><div class="num" id="statRequests">0</div><div class="lbl">Pedidos de parceria</div></div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="active" data-panel="places" onclick="switchAdminTab('places')">Lugares</button>
+      <button data-panel="requests" onclick="switchAdminTab('requests')">Pedidos de parceria</button>
+      <button data-panel="visual" onclick="switchAdminTab('visual')">Identidade visual</button>
+    </div>
+
+    <div class="admin-panel" id="panel-visual">
+      <div class="card-block" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1);">
+        <h3 style="color:white;">Foto de fundo do login</h3>
+        <p style="font-size:12.5px;color:rgba(255,255,255,0.55);margin-bottom:14px;">Envie uma foto de Ibitirama (montanhas, trilha, pôr do sol). Sem foto, usamos o verde da marca.</p>
+        <div class="photo-upload-row" id="heroPhotoRow"></div>
+      </div>
+      <div class="card-block" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1);">
+        <h3 style="color:white;">Fotos de capa das categorias</h3>
+        <p style="font-size:12.5px;color:rgba(255,255,255,0.55);margin-bottom:14px;">Substitua o ícone de cada categoria por uma foto real.</p>
+        <div id="catPhotosList"></div>
+      </div>
+    </div>
+
+    <div class="admin-panel active" id="panel-places">
+      <button class="admin-add-btn" onclick="openPlaceForm()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>Adicionar lugar</button>
+      <div id="adminPlacesList"></div>
+    </div>
+
+    <div class="admin-panel" id="panel-requests">
+      <div id="adminRequestsList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="toastMsg"></span></div>
+
+<!-- ============ FIREBASE (Auth + Firestore) ============
+     Banco de dados real do app. O script abaixo inicializa o Firebase
+     e expõe uma API simples (window.MovaFirebase) para o script principal
+     (mais abaixo) usar, já que módulos ES não compartilham escopo global. -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, onAuthStateChanged, updateProfile,
+    setPersistence, browserLocalPersistence, inMemoryPersistence
+  } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, deleteDoc,
+    collection, getDocs, writeBatch
+  } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB49XVD_pCgvA8Cr9oVUF5XZoRzCogaxFo",
+    authDomain: "app-mova.firebaseapp.com",
+    projectId: "app-mova",
+    storageBucket: "app-mova.firebasestorage.app",
+    messagingSenderId: "712250135294",
+    appId: "1:712250135294:web:8a3bc42e0098143e0c8baf"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Em alguns ambientes (arquivo aberto direto do disco, navegação privada,
+  // cookies/armazenamento de terceiros bloqueados) o Firebase não consegue
+  // gravar a sessão em disco e o login trava silenciosamente. Aqui tentamos
+  // o modo padrão e, se falhar, caímos para um modo que funciona só durante
+  // a aba aberta — assim o login sempre completa.
+  try{
+    await setPersistence(auth, browserLocalPersistence);
+  }catch(e){
+    try{ await setPersistence(auth, inMemoryPersistence); }catch(e2){ /* segue mesmo assim */ }
+  }
+
+  window.MovaFirebase = {
+    auth, db,
+
+    async register(nome, email, pass){
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, { displayName: nome });
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        nome, email, igConfirmado: true, criadoEm: Date.now()
+      });
+      return cred.user;
+    },
+    async login(email, pass){
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
+      return cred.user;
+    },
+    async logout(){ await signOut(auth); },
+    onAuthChange(cb){ onAuthStateChanged(auth, cb); },
+
+    async getDocIn(name, id){
+      const snap = await getDoc(doc(db, name, id));
+      return snap.exists() ? snap.data() : null;
+    },
+    async setDocIn(name, id, data){ await setDoc(doc(db, name, id), data); },
+    async deleteDocIn(name, id){ await deleteDoc(doc(db, name, id)); },
+    async getCollection(name){
+      const snap = await getDocs(collection(db, name));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+    async saveCollection(name, arr){
+      const batch = writeBatch(db);
+      arr.forEach(item => batch.set(doc(db, name, item.id), item));
+      await batch.commit();
+    },
+
+    errorMessage(err){
+      const map = {
+        'auth/email-already-in-use': 'Já existe uma conta com esse e-mail.',
+        'auth/invalid-email': 'E-mail inválido.',
+        'auth/weak-password': 'A senha precisa ter pelo menos 6 caracteres.',
+        'auth/invalid-credential': 'E-mail ou senha incorretos.',
+        'auth/wrong-password': 'E-mail ou senha incorretos.',
+        'auth/user-not-found': 'E-mail ou senha incorretos.',
+        'auth/too-many-requests': 'Muitas tentativas. Tente novamente em instantes.',
+        'auth/network-request-failed': 'Falha de conexão. Verifique sua internet.',
+      };
+      return map[err?.code] || 'Não foi possível completar a operação. Tente novamente.';
+    }
+  };
+  window.dispatchEvent(new Event('mova-firebase-ready'));
+</script>
+
+<script>
+/* =========================================================
+   MOVA — App de turismo de Ibitirama
+   Armazenamento: Firebase (Authentication para contas de
+   usuário, Firestore para lugares, avaliações, configurações
+   visuais e pedidos de parceria). Ver script type="module"
+   logo acima, que expõe window.MovaFirebase.
+   IA: chamada à API da Anthropic disponível no ambiente de
+   artifacts, sem necessidade de chave.
+   ========================================================= */
+
+const CATEGORIES = [
+  { id:'cachoeiras',  label:'Cachoeiras',         icon:'<path d="M12 2c2 4 4 6 4 9a4 4 0 11-8 0c0-3 2-5 4-9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' },
+  { id:'trilhas',     label:'Trilhas & Mirantes', icon:'<path d="M3 21l4-9 4 6 3-5 7 8H3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' },
+  { id:'restaurantes',label:'Restaurantes',       icon:'<path d="M7 2v8M5 2v5a2 2 0 002 2 2 2 0 002-2V2M17 2c-1.7 0-3 2-3 5s1 5 3 5M17 2v18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' },
+  { id:'bares',       label:'Bares',              icon:'<path d="M5 4h14l-6 8v7h3M9 19h3v-7L5 4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' },
+  { id:'lanchonetes', label:'Lanchonetes',        icon:'<path d="M4 11h16M4 11a2 2 0 00-2 2 1 1 0 001 1h18a1 1 0 001-1 2 2 0 00-2-2M4 11c0-4 3.5-7 8-7s8 3 8 7M5 14l1 6h12l1-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' },
+];
+
+function catLabel(id){ const c = CATEGORIES.find(c=>c.id===id); return c ? c.label : id; }
+function catIcon(id){ const c = CATEGORIES.find(c=>c.id===id); return c ? c.icon : CATEGORIES[1].icon; }
+
+/* Selo MOVA — medalha de parceiro, reaproveitada no card e na página do lugar */
+function seloSVG(){
+  return `<svg viewBox="0 0 40 40" fill="none">
+    <path d="M20 1.5l2.7 3.8 4.5-1.6 1.2 4.6 4.7 0.9-1.6 4.5 3.3 3.5-3.3 3.5 1.6 4.5-4.7 0.9-1.2 4.6-4.5-1.6L20 38.5l-2.7-3.8-4.5 1.6-1.2-4.6-4.7-0.9 1.6-4.5L5.2 22.3l3.3-3.5-1.6-4.5 4.7-0.9 1.2-4.6 4.5 1.6L20 1.5z" fill="#C45A2C"/>
+    <circle cx="20" cy="20" r="10.5" fill="white"/>
+    <path d="M14.5 20.3l3.6 3.6 7.4-8.4" stroke="#C45A2C" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+/* ---------------- SITE SETTINGS (identidade visual) ---------------- */
+let siteSettings = { heroImage:null, categoryImages:{} };
+function loadSettings(){ return siteSettings; }
+function saveSettings(s){ siteSettings = s; window.MovaFirebase.setDocIn('settings','app', s); }
+function applySiteSettings(){
+  const s = loadSettings();
+  const wrap = document.getElementById('authWrap');
+  if(s.heroImage){
+    wrap.style.setProperty('--auth-bg-image', `url(${s.heroImage})`);
+    wrap.classList.add('has-photo');
+  } else {
+    wrap.style.setProperty('--auth-bg-image', 'none');
+    wrap.classList.remove('has-photo');
+  }
+}
+
+/* ---------------- SEED DATA ---------------- */
+function seedPlaces(){
+  return [
+    { id:'p1', categoria:'trilhas', nome:'Pico da Bandeira', descricao:'A subida ao terceiro ponto mais alto do Brasil, com nascer do sol sobre o Parque Nacional do Caparaó. Uma das experiências mais marcantes de quem visita Ibitirama.', endereco:'Parque Nacional do Caparaó, acesso via Ibitirama', lat:-20.4498, lng:-41.7894, fotos:[], parceiro:false, exemplo:true, tags:['natureza','aventura'], avaliacoes:[{nota:5,nome:'Marina',comentario:'Vista inesquecível no nascer do sol.'}] },
+    { id:'p2', categoria:'trilhas', nome:'Mirante do Vale', descricao:'Vista panorâmica das montanhas que cercam Ibitirama, ideal para o fim de tarde. Acesso fácil, ótimo para famílias.', endereco:'Estrada acima do centro de Ibitirama', lat:-20.4860, lng:-41.6720, fotos:[], parceiro:false, exemplo:true, tags:['natureza','relaxar'], avaliacoes:[{nota:4,nome:'João',comentario:'Lugar tranquilo, ótimo pôr do sol.'}] },
+    { id:'p3', categoria:'cachoeiras', nome:'Cachoeira da Serra', descricao:'Queda d\u2019água em meio à Mata Atlântica preservada, com poço para banho. Trilha de dificuldade moderada.', endereco:'Zona rural de Ibitirama', lat:-20.5012, lng:-41.6605, fotos:[], parceiro:false, exemplo:true, tags:['natureza','relaxar'], avaliacoes:[] },
+    { id:'p4', categoria:'cachoeiras', nome:'Cachoeira do Caparaó', descricao:'Uma das quedas mais conhecidas da região, com fácil acesso e estrutura simples de apoio aos visitantes.', endereco:'Próximo ao Parque Nacional do Caparaó', lat:-20.4700, lng:-41.7400, fotos:[], parceiro:false, exemplo:true, tags:['natureza','aventura'], avaliacoes:[] },
+    { id:'p5', categoria:'restaurantes', nome:'Sabor da Serra', descricao:'Comida caseira capixaba com ingredientes da região, ambiente acolhedor com vista para as montanhas.', endereco:'Centro de Ibitirama', lat:-20.4843, lng:-41.6707, fotos:[], parceiro:true, exemplo:true, tags:['gastronomia'], avaliacoes:[{nota:5,nome:'Carla',comentario:'Melhor tilápia da região!'}] },
+    { id:'p6', categoria:'bares', nome:'Bar do Caminho', descricao:'Point local pra happy hour com música ao vivo nos fins de semana e cerveja artesanal capixaba.', endereco:'Centro de Ibitirama', lat:-20.4831, lng:-41.6699, fotos:[], parceiro:true, exemplo:true, tags:['gastronomia','relaxar'], avaliacoes:[] },
+    { id:'p7', categoria:'lanchonetes', nome:'Lanchonete da Praça', descricao:'Lanches rápidos, sucos naturais e o famoso pastel de fim de tarde, bem na praça central.', endereco:'Praça central de Ibitirama', lat:-20.4839, lng:-41.6701, fotos:[], parceiro:false, exemplo:true, tags:['gastronomia'], avaliacoes:[] },
+  ];
+}
+
+/* ---------------- STATE / STORAGE (Firestore, com cache em memória) ---------------- */
+let places = [];
+function loadPlaces(){ return places; }
+function savePlaces(arr){ places = arr; window.MovaFirebase.saveCollection('places', arr); }
+
+let allUsers = [];               // somente leitura, usado para contagem no admin
+function loadUsers(){ return allUsers; }
+
+let partnerRequests = [];
+function loadRequests(){ return partnerRequests; }
+function saveRequests(arr){ partnerRequests = arr; window.MovaFirebase.saveCollection('partnerRequests', arr); }
+
+let appUser = null;              // usuário logado (perfil do Firestore + dados do Firebase Auth)
+function currentUser(){ return appUser; }
+
+async function initData(){
+  const s = await window.MovaFirebase.getDocIn('settings','app');
+  siteSettings = s || { heroImage:null, categoryImages:{} };
+
+  let p = await window.MovaFirebase.getCollection('places');
+  if(!p || p.length === 0){
+    p = seedPlaces();
+    await window.MovaFirebase.saveCollection('places', p);
+  }
+  places = p;
+
+  partnerRequests = await window.MovaFirebase.getCollection('partnerRequests');
+  allUsers = await window.MovaFirebase.getCollection('users');
+}
+
+const ADMIN_PASSWORD = 'mova2026admin'; // altere esta senha antes de publicar
+
+let activeCategory = 'all';
+let activePlaceId = null;
+let quizAnswers = {};
+
+/* ---------------- INIT ---------------- */
+async function enterAppWithUser(fbUser){
+  let profile = null;
+  try{
+    profile = await window.MovaFirebase.getDocIn('users', fbUser.uid);
+  }catch(err){
+    console.warn('Não foi possível buscar o perfil no Firestore, seguindo com dados básicos da conta:', err);
+  }
+  appUser = {
+    id: fbUser.uid,
+    email: fbUser.email,
+    nome: (profile && profile.nome) || fbUser.displayName || fbUser.email.split('@')[0]
+  };
+  showApp(appUser);
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  await initData();
+  applySiteSettings();
+
+  window.MovaFirebase.onAuthChange((fbUser) => {
+    // Cobre apenas a sessão já existente ao abrir a página, e o logout.
+    // O login e o cadastro tratam sua própria entrada diretamente (veja
+    // doLogin/doRegister abaixo), sem depender deste aviso.
+    if(fbUser){
+      if(!appUser) enterAppWithUser(fbUser);
+    } else {
+      appUser = null;
+      document.getElementById('mainApp').classList.add('hide');
+      document.getElementById('authScreen').classList.remove('hide');
+    }
+  });
+});
+
+/* ---------------- AUTH ---------------- */
+function switchAuthTab(tab){
+  document.getElementById('tabLoginBtn').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegisterBtn').classList.toggle('active', tab==='register');
+
+  const wrap = document.getElementById('authForms');
+  const loginEl = document.getElementById('loginForm');
+  const regEl = document.getElementById('registerForm');
+  const fromEl = tab==='login' ? regEl : loginEl;
+  const toEl = tab==='login' ? loginEl : regEl;
+  if(fromEl.classList.contains('hide')) return;
+
+  wrap.style.height = wrap.offsetHeight + 'px';
+  fromEl.classList.add('hide');
+  toEl.classList.remove('hide');
+  const targetHeight = toEl.scrollHeight;
+
+  requestAnimationFrame(()=>{ wrap.style.height = targetHeight + 'px'; });
+  wrap.addEventListener('transitionend', function onEnd(e){
+    if(e.propertyName !== 'height') return;
+    wrap.style.height = 'auto';
+    wrap.removeEventListener('transitionend', onEnd);
+  });
+}
+function toggleRegisterBtn(){
+  document.getElementById('registerBtn').disabled = !document.getElementById('igConfirm').checked;
+}
+function showError(id, msg){ const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
+function hideError(id){ document.getElementById(id).classList.remove('show'); }
+
+async function doRegister(){
+  hideError('registerError');
+  const nome = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  if(!nome || !email || !pass){ showError('registerError','Preencha todos os campos.'); return; }
+  if(!document.getElementById('igConfirm').checked){ showError('registerError','Confirme que você segue a MOVA no Instagram.'); return; }
+  const btn = document.getElementById('registerBtn');
+  btn.disabled = true;
+  try{
+    const fbUser = await window.MovaFirebase.register(nome, email, pass);
+    toast('Conta criada! Bem-vindo(a) à MOVA.');
+    await enterAppWithUser(fbUser);
+  }catch(err){
+    showError('registerError', window.MovaFirebase.errorMessage(err));
+    btn.disabled = false;
+  }
+}
+async function doLogin(){
+  hideError('loginError');
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  if(!email || !pass){ showError('loginError','Preencha e-mail e senha.'); return; }
+  const btn = document.querySelector('#loginForm .btn-primary');
+  if(btn) btn.disabled = true;
+  try{
+    const fbUser = await window.MovaFirebase.login(email, pass);
+    await enterAppWithUser(fbUser);
+  }catch(err){
+    showError('loginError', window.MovaFirebase.errorMessage(err));
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+function doLogout(){
+  appUser = null;
+  window.MovaFirebase.logout();
+  document.getElementById('mainApp').classList.add('hide');
+  document.getElementById('authScreen').classList.remove('hide');
+}
+function showApp(user){
+  document.getElementById('authScreen').classList.add('hide');
+  document.getElementById('mainApp').classList.remove('hide');
+  const initials = user.nome.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('topAv').textContent = initials;
+  document.getElementById('topName').textContent = user.nome.split(' ')[0];
+  document.getElementById('profAv').textContent = initials;
+  document.getElementById('profName').textContent = user.nome;
+  document.getElementById('profEmail').textContent = user.email;
+  document.getElementById('homeGreeting').textContent = 'Boas-vindas, ' + user.nome.split(' ')[0] + '.';
+  goScreen('home');
+}
+
+/* ---------------- ADMIN AUTH ---------------- */
+function openAdminLogin(){ document.getElementById('adminLoginModal').classList.remove('hide'); }
+function closeModal(id){ document.getElementById(id).classList.add('hide'); }
+function doAdminLogin(){
+  hideError('adminError');
+  const p = document.getElementById('adminPass').value;
+  if(p !== ADMIN_PASSWORD){ showError('adminError','Senha incorreta.'); return; }
+  sessionStorage.setItem('mova_admin','1');
+  closeModal('adminLoginModal');
+  document.getElementById('authScreen').classList.add('hide');
+  document.getElementById('mainApp').classList.add('hide');
+  document.getElementById('adminShell').classList.remove('hide');
+  renderAdmin();
+}
+function doAdminLogout(){
+  sessionStorage.removeItem('mova_admin');
+  document.getElementById('adminShell').classList.add('hide');
+  const u = currentUser();
+  if(u){ showApp(u); } else { document.getElementById('authScreen').classList.remove('hide'); }
+}
+
+/* ---------------- NAVIGATION ---------------- */
+function goScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.screen===name));
+  document.querySelectorAll('.dlink').forEach(t=>t.classList.toggle('active', t.dataset.screen===name));
+  window.scrollTo(0,0);
+  if(name==='home') renderHome();
+  if(name==='explore') { renderFilterChips(); renderExploreList(); }
+}
+function filterAndGo(filter){
+  activeCategory = filter==='parceiro' ? 'all' : filter;
+  goScreen('explore');
+  if(filter==='parceiro'){ document.getElementById('searchInput').value=''; renderFilterChips(); renderExploreList(true); }
+}
+
+/* ---------------- HOME ---------------- */
+function renderHome(){
+  const settings = loadSettings();
+  const catGrid = document.getElementById('catGrid');
+  catGrid.innerHTML = CATEGORIES.map(c => {
+    const photo = settings.categoryImages && settings.categoryImages[c.id];
+    return `
+    <button class="cat-card ${photo?'has-photo':''}" onclick="filterAndGo('${c.id}')">
+      ${photo ? `<img src="${photo}" alt="${c.label}">` : `<div class="ic"><svg viewBox="0 0 24 24" fill="none">${c.icon}</svg></div>`}
+      <span>${c.label}</span>
+    </button>`;
+  }).join('');
+
+  const featured = places.slice(0,6);
+  document.getElementById('featuredScroll').innerHTML = featured.map(placeCardHTML).join('') || emptyHTML('Nenhum lugar cadastrado ainda.');
+
+  const partners = places.filter(p=>p.parceiro);
+  document.getElementById('partnerScroll').innerHTML = partners.length ? partners.map(placeCardHTML).join('') : emptyHTML('Em breve, parceiros locais aqui.');
+}
+function emptyHTML(msg){
+  return `<div class="empty-state" style="min-width:100%"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11l9-7 9 7M5 10v9a1 1 0 001 1h13a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.6"/></svg><p>${msg}</p></div>`;
+}
+
+function avgRating(place){
+  if(!place.avaliacoes || !place.avaliacoes.length) return 0;
+  return place.avaliacoes.reduce((a,r)=>a+r.nota,0) / place.avaliacoes.length;
+}
+function starsHTML(n, size='s'){
+  let s='';
+  for(let i=1;i<=5;i++){
+    s += `<svg viewBox="0 0 24 24" fill="${i<=Math.round(n)?'currentColor':'none'}" stroke="currentColor" stroke-width="1.4"><path d="M12 3l2.6 5.9L21 9.6l-4.7 4.2L17.6 21 12 17.6 6.4 21l1.3-7.2L3 9.6l6.4-0.7L12 3z" stroke-linejoin="round"/></svg>`;
+  }
+  return `<span class="stars">${s}</span>`;
+}
+function placeImgStyle(place){
+  return place.fotos && place.fotos.length ? `<img src="${place.fotos[0]}" alt="${place.nome}">` : '';
+}
+function placeCardHTML(p){
+  const avg = avgRating(p);
+  return `
+  <div class="place-card" onclick="openPlaceDetail('${p.id}')">
+    <div class="place-img">
+      ${placeImgStyle(p)}
+      <span class="cat-chip">${catLabel(p.categoria)}</span>
+      ${p.parceiro ? `<span class="selo-card" title="Selo MOVA · Parceiro verificado">${seloSVG()}</span>` : ''}
+    </div>
+    <div class="place-body">
+      <h3>${p.nome}</h3>
+      <p>${p.descricao}</p>
+      <div class="place-meta">
+        ${starsHTML(avg)}
+        <span>${avg ? avg.toFixed(1) : 'Novo'}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- EXPLORE / LIST ---------------- */
+function renderFilterChips(){
+  const chips = [{id:'all',label:'Todos'}, ...CATEGORIES];
+  document.getElementById('filterChips').innerHTML = chips.map(c => `
+    <button class="filter-chip ${activeCategory===c.id?'active':''}" onclick="setCategory('${c.id}')">${c.label}</button>
+  `).join('');
+  document.getElementById('exploreTitle').textContent = activeCategory==='all' ? 'Todos os lugares' : catLabel(activeCategory);
+}
+function setCategory(id){ activeCategory = id; renderFilterChips(); renderExploreList(); }
+function renderExploreList(partnersOnly){
+  const term = (document.getElementById('searchInput').value || '').toLowerCase();
+  let list = places.filter(p => (activeCategory==='all' || p.categoria===activeCategory) && p.nome.toLowerCase().includes(term));
+  if(partnersOnly) list = list.filter(p=>p.parceiro);
+  document.getElementById('exploreGrid').innerHTML = list.length ? list.map(placeCardHTML).join('') : `<div style="grid-column:1/-1">${emptyHTML('Nenhum lugar encontrado. Tente outra busca ou categoria.')}</div>`;
+}
+
+/* ---------------- DETAIL ---------------- */
+function openPlaceDetail(id){
+  activePlaceId = id;
+  renderDetail();
+  goScreen('detail');
+}
+function renderDetail(){
+  const p = places.find(x=>x.id===activePlaceId);
+  if(!p) return;
+  const avg = avgRating(p);
+  const gallery = (p.fotos && p.fotos.length)
+    ? p.fotos.map(f=>`<div class="g-img"><img src="${f}"></div>`).join('')
+    : `<div class="g-img"></div>`;
+  const reviews = (p.avaliacoes||[]).slice().reverse().map(r => `
+    <div class="review-item">
+      <div class="review-top"><strong>${r.nome}</strong>${starsHTML(r.nota)}</div>
+      <p>${r.comentario || ''}</p>
+    </div>`).join('') || '<p style="font-size:13px;color:rgba(26,26,26,0.5);">Seja o primeiro a avaliar este lugar.</p>';
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="gallery">${gallery}</div>
+    <div class="detail-title-row"><h1>${p.nome}</h1></div>
+    <div class="detail-badges">
+      <span class="badge cat">${catLabel(p.categoria)}</span>
+      ${p.parceiro ? `<span class="selo-inline"><span class="selo-ic">${seloSVG()}</span><span>Selo MOVA · Parceiro verificado</span></span>` : ''}
+      ${p.exemplo ? `<span class="badge cat" style="background:rgba(196,90,44,0.1);color:#A6491F;">Conteúdo de exemplo</span>` : ''}
+    </div>
+    <div class="detail-rating">${starsHTML(avg)}<span class="num">${avg?avg.toFixed(1):'—'}</span><span class="count">${(p.avaliacoes||[]).length} avaliação(ões)</span></div>
+    <p class="detail-desc">${p.descricao}</p>
+    <div class="detail-actions">
+      <button class="btn-primary" onclick="routeTo('${p.id}')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M3 11l18-8-8 18-2-8-8-2z" stroke="white" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Como chegar
+      </button>
+      <button class="btn-icon" title="Endereço"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.7"/></svg></button>
+    </div>
+    <p style="font-size:12.5px;color:rgba(26,26,26,0.55);margin-top:-22px;margin-bottom:24px;">${p.endereco||''}</p>
+
+    <div class="card-block">
+      <h3>Avalie este lugar</h3>
+      <div class="rate-stars" id="rateStarsRow">${[1,2,3,4,5].map(i=>`<button onclick="selectStar(${i})" data-i="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l2.6 5.9L21 9.6l-4.7 4.2L17.6 21 12 17.6 6.4 21l1.3-7.2L3 9.6l6.4-0.7L12 3z" stroke-linejoin="round"/></svg></button>`).join('')}</div>
+      <div class="field"><input type="text" id="reviewComment" placeholder="Deixe um comentário (opcional)"></div>
+      <button class="btn-secondary" onclick="submitReview('${p.id}')">Enviar avaliação</button>
+    </div>
+
+    <div class="card-block">
+      <h3>Avaliações</h3>
+      ${reviews}
+    </div>`;
+  window.__selectedStar = 0;
+}
+function selectStar(i){
+  window.__selectedStar = i;
+  document.querySelectorAll('#rateStarsRow button').forEach(b => b.classList.toggle('sel', +b.dataset.i <= i));
+}
+function submitReview(id){
+  const star = window.__selectedStar || 0;
+  if(!star){ toast('Selecione de 1 a 5 estrelas.'); return; }
+  const p = places.find(x=>x.id===id);
+  const u = currentUser();
+  p.avaliacoes = p.avaliacoes || [];
+  p.avaliacoes.push({ nota:star, nome: u ? u.nome.split(' ')[0] : 'Visitante', comentario: document.getElementById('reviewComment').value.trim() });
+  savePlaces(places);
+  renderDetail();
+  toast('Avaliação enviada. Obrigado!');
+}
+function routeTo(id){
+  const p = places.find(x=>x.id===id);
+  const dest = (p.lat && p.lng) ? `${p.lat},${p.lng}` : encodeURIComponent(p.endereco + ' Ibitirama ES');
+  function openMaps(origin){
+    const url = origin
+      ? `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`
+      : `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`;
+    window.open(url, '_blank');
+  }
+  if(navigator.geolocation){
+    toast('Localizando você...');
+    navigator.geolocation.getCurrentPosition(
+      pos => openMaps(`${pos.coords.latitude},${pos.coords.longitude}`),
+      () => openMaps(null),
+      { timeout:6000 }
+    );
+  } else { openMaps(null); }
+}
+
+/* ---------------- AI ITINERARY ---------------- */
+function quizSelect(btn){
+  const group = btn.parentElement;
+  group.querySelectorAll('.quiz-opt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const q = group.dataset.q;
+  quizAnswers[q] = btn.dataset.val;
+  const stepNum = {perfil:1, interesse:2, tempo:3}[q];
+  document.getElementById('next'+stepNum).disabled = false;
+}
+document.addEventListener('click', e=>{
+  const opt = e.target.closest('.quiz-opt');
+  if(opt) quizSelect(opt);
+});
+function quizNext(step){
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('quizStep'+step).classList.add('active');
+  document.getElementById('qp1').className = step>=1 ? 'done':'';
+  document.getElementById('qp2').className = step>=2 ? 'done':'';
+  document.getElementById('qp3').className = step>=3 ? 'done':'';
+}
+function resetQuiz(){
+  quizAnswers = {};
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('next1').disabled = true;
+  document.getElementById('next2').disabled = true;
+  document.getElementById('next3').disabled = true;
+  document.getElementById('quizWrap').classList.remove('hide');
+  document.getElementById('aiResult').classList.add('hide');
+  quizNext(1);
+}
+
+async function generateItinerary(){
+  document.getElementById('quizWrap').classList.add('hide');
+  document.getElementById('aiLoading').classList.remove('hide');
+  document.getElementById('aiResult').classList.add('hide');
+
+  const catalog = places.map(p => ({ id:p.id, nome:p.nome, categoria:p.categoria, descricao:p.descricao, tags:p.tags||[] }));
+  const prompt = `Você é o guia de roteiros da MOVA, projeto de turismo local de Ibitirama (ES, Brasil), perto do Pico da Bandeira.
+Perfil do visitante: ${quizAnswers.perfil}. Interesse principal: ${quizAnswers.interesse}. Tempo disponível: ${quizAnswers.tempo}.
+Lugares disponíveis (use SOMENTE estes, pelo "id"): ${JSON.stringify(catalog)}.
+
+Monte um roteiro detalhado com 3 a 5 paradas, na ordem sugerida de visita, adequado ao perfil e ao tempo informados.
+Para cada parada, escreva um motivo específico (não genérico) conectando o lugar ao perfil e ao interesse do visitante.
+Responda APENAS em JSON válido, sem nenhum texto antes ou depois, neste formato exato:
+{"intro":"parágrafo caloroso de até 40 palavras introduzindo o roteiro e por que ele faz sentido para este visitante",
+"tempo_total":"estimativa curta do tempo total do roteiro, ex: 'cerca de 6 horas'",
+"paradas":[{"id":"id_do_lugar","motivo":"frase específica de até 28 palavras explicando por que esta parada combina com o perfil","duracao":"tempo estimado nesta parada, ex: '1h30'","dica":"uma dica prática e curta da MOVA para essa parada, até 18 palavras"}]}`;
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role:"user", content: prompt }]
+      })
+    });
+    const data = await response.json();
+    let text = (data.content || []).map(b=>b.text||'').join('').trim();
+    text = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(text);
+    renderItinerary(parsed);
+  }catch(err){
+    renderItinerary(fallbackItinerary());
+  }
+}
+function fallbackItinerary(){
+  const interesseTagMap = { natureza:'natureza', aventura:'aventura', gastronomia:'gastronomia', relaxar:'relaxar' };
+  const tag = interesseTagMap[quizAnswers.interesse];
+  let picks = places.filter(p => (p.tags||[]).includes(tag));
+  if(picks.length < 3) picks = places.slice();
+  picks = picks.slice(0,4);
+  return {
+    intro: `Um roteiro pensado para quem está vindo ${quizAnswers.perfil==='sozinho'?'sozinho(a)':'em '+quizAnswers.perfil} e quer aproveitar bem o tempo em Ibitirama, com foco em ${quizAnswers.interesse}.`,
+    tempo_total: quizAnswers.tempo==='meio-dia' ? 'cerca de 4 horas' : quizAnswers.tempo==='um-dia' ? 'um dia inteiro' : 'mais de um dia',
+    paradas: picks.map(p => ({ id:p.id, motivo:'Combina com o que você está buscando nesta visita.', duracao:'1h–2h', dica:'Confira o horário de funcionamento antes de ir.' }))
+  };
+}
+function renderItinerary(data){
+  document.getElementById('aiLoading').classList.add('hide');
+  document.getElementById('aiResult').classList.remove('hide');
+  document.getElementById('itinIntro').textContent = data.intro || 'Aqui está seu roteiro pela MOVA.';
+  document.getElementById('itinTotal').textContent = data.tempo_total ? ('Duração estimada do roteiro: ' + data.tempo_total) : '';
+  const html = (data.paradas||[]).map((s,i) => {
+    const p = places.find(x=>x.id===s.id);
+    if(!p) return '';
+    return `<div class="itin-item" onclick="openPlaceDetail('${p.id}')">
+      <div class="itin-num">${i+1}</div>
+      <div class="itin-body">
+        <h4>${p.nome}</h4>
+        <p>${s.motivo||''}</p>
+        ${s.duracao ? `<div class="itin-meta"><span>⏱ ${s.duracao}</span><span>${catLabel(p.categoria)}</span></div>` : ''}
+        ${s.dica ? `<div class="itin-dica">💡 ${s.dica}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('itinList').innerHTML = html || emptyHTML('Não foi possível montar o roteiro agora. Tente novamente.');
+}
+
+/* ---------------- PARTNER REQUEST ---------------- */
+function openPartnerModal(){ document.getElementById('partnerModal').classList.remove('hide'); }
+function submitPartnerRequest(){
+  const nome = document.getElementById('pNome').value.trim();
+  const categoria = document.getElementById('pCategoria').value;
+  const contato = document.getElementById('pContato').value.trim();
+  const msg = document.getElementById('pMsg').value.trim();
+  if(!nome || !contato){ toast('Preencha pelo menos nome e contato.'); return; }
+  const reqs = loadRequests();
+  reqs.push({ id:'r'+Date.now(), nome, categoria, contato, msg, data:new Date().toLocaleDateString('pt-BR') });
+  saveRequests(reqs);
+  closeModal('partnerModal');
+  document.getElementById('pNome').value=''; document.getElementById('pContato').value=''; document.getElementById('pMsg').value='';
+  toast('Pedido enviado! A MOVA vai entrar em contato.');
+}
+
+/* ---------------- ADMIN ---------------- */
+let adminEditingId = null;
+let pfPhotos = [];
+let pfPartner = false;
+let adminTab = 'places';
+
+function renderAdmin(){
+  places = loadPlaces();
+  document.getElementById('statPlaces').textContent = places.length;
+  document.getElementById('statUsers').textContent = loadUsers().length;
+  document.getElementById('statReviews').textContent = places.reduce((a,p)=>a+(p.avaliacoes?p.avaliacoes.length:0),0);
+  document.getElementById('statRequests').textContent = loadRequests().length;
+  renderAdminPlaces();
+  renderAdminRequests();
+  renderVisualPanel();
+}
+function renderVisualPanel(){
+  const s = loadSettings();
+  const heroRow = document.getElementById('heroPhotoRow');
+  heroRow.innerHTML = (s.heroImage
+    ? `<div class="photo-thumb"><img src="${s.heroImage}"><button onclick="removeHeroPhoto()"><svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>`
+    : '') + `<label class="photo-add"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input type="file" accept="image/*" onchange="uploadHeroPhoto(event)" style="display:none"></label>`;
+
+  const list = document.getElementById('catPhotosList');
+  list.innerHTML = CATEGORIES.map(c => {
+    const photo = s.categoryImages && s.categoryImages[c.id];
+    return `
+    <div class="admin-list-item">
+      <div class="thumb">${photo ? `<img src="${photo}">` : ''}</div>
+      <div class="info"><strong>${c.label}</strong><span>${photo?'Foto enviada':'Usando ícone padrão'}</span></div>
+      <div class="acts">
+        <label class="acts" style="cursor:pointer;"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg><input type="file" accept="image/*" onchange="uploadCatPhoto(event,'${c.id}')" style="display:none"></label>
+        ${photo ? `<button onclick="removeCatPhoto('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6"/></svg></button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function uploadHeroPhoto(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { const s = loadSettings(); s.heroImage = ev.target.result; saveSettings(s); applySiteSettings(); renderVisualPanel(); toast('Foto de fundo atualizada.'); };
+  reader.readAsDataURL(file);
+}
+function removeHeroPhoto(){ const s = loadSettings(); s.heroImage = null; saveSettings(s); applySiteSettings(); renderVisualPanel(); }
+function uploadCatPhoto(e, catId){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { const s = loadSettings(); s.categoryImages = s.categoryImages||{}; s.categoryImages[catId] = ev.target.result; saveSettings(s); renderVisualPanel(); toast('Foto da categoria atualizada.'); };
+  reader.readAsDataURL(file);
+}
+function removeCatPhoto(catId){ const s = loadSettings(); if(s.categoryImages) delete s.categoryImages[catId]; saveSettings(s); renderVisualPanel(); }
+function switchAdminTab(tab){
+  adminTab = tab;
+  document.querySelectorAll('.admin-tabs button').forEach(b=>b.classList.toggle('active', b.dataset.panel===tab));
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+function renderAdminPlaces(){
+  document.getElementById('adminPlacesList').innerHTML = places.map(p => `
+    <div class="admin-list-item">
+      <div class="thumb">${p.fotos&&p.fotos.length?`<img src="${p.fotos[0]}">`:''}</div>
+      <div class="info"><strong>${p.nome}</strong><span>${catLabel(p.categoria)}${p.parceiro?' · Parceiro':''}</span></div>
+      <div class="acts">
+        <button onclick="openPlaceForm('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>
+        <button onclick="deletePlace('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6"/></svg></button>
+      </div>
+    </div>`).join('') || '<p style="color:rgba(255,255,255,0.5);font-size:13px;">Nenhum lugar cadastrado.</p>';
+}
+function renderAdminRequests(){
+  const reqs = loadRequests();
+  document.getElementById('adminRequestsList').innerHTML = reqs.slice().reverse().map(r => `
+    <div class="admin-list-item">
+      <div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,0.5);">${catLabel(r.categoria).slice(0,3)}</div>
+      <div class="info"><strong>${r.nome}</strong><span>${r.contato} · ${r.data}</span></div>
+    </div>`).join('') || '<p style="color:rgba(255,255,255,0.5);font-size:13px;">Nenhum pedido de parceria ainda.</p>';
+}
+
+function openPlaceForm(id){
+  adminEditingId = id || null;
+  pfPhotos = []; pfPartner = false;
+  document.getElementById('placeFormTitle').textContent = id ? 'Editar lugar' : 'Novo lugar';
+  if(id){
+    const p = places.find(x=>x.id===id);
+    document.getElementById('pfCategoria').value = p.categoria;
+    document.getElementById('pfNome').value = p.nome;
+    document.getElementById('pfDesc').value = p.descricao;
+    document.getElementById('pfEndereco').value = p.endereco||'';
+    document.getElementById('pfLat').value = p.lat||'';
+    document.getElementById('pfLng').value = p.lng||'';
+    pfPhotos = (p.fotos||[]).slice();
+    pfPartner = !!p.parceiro;
+  } else {
+    document.getElementById('pfCategoria').value = 'cachoeiras';
+    document.getElementById('pfNome').value = '';
+    document.getElementById('pfDesc').value = '';
+    document.getElementById('pfEndereco').value = '';
+    document.getElementById('pfLat').value = '';
+    document.getElementById('pfLng').value = '';
+  }
+  document.getElementById('pfPartnerSwitch').className = 'switch' + (pfPartner ? ' on' : '');
+  renderPfPhotos();
+  document.getElementById('placeFormModal').classList.remove('hide');
+}
+function renderPfPhotos(){
+  const row = document.getElementById('pfPhotosRow');
+  row.innerHTML = pfPhotos.map((f,i) => `
+    <div class="photo-thumb"><img src="${f}"><button onclick="removePfPhoto(${i})"><svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+  `).join('') + `<label class="photo-add"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input type="file" accept="image/*" multiple onchange="addPhotos(event)" style="display:none"></label>`;
+}
+function addPhotos(e){
+  const files = Array.from(e.target.files || []);
+  let pending = files.length;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => { pfPhotos.push(ev.target.result); pending--; if(pending===0) renderPfPhotos(); };
+    reader.readAsDataURL(file);
+  });
+}
+function removePfPhoto(i){ pfPhotos.splice(i,1); renderPfPhotos(); }
+function togglePartnerSwitch(){
+  pfPartner = !pfPartner;
+  document.getElementById('pfPartnerSwitch').className = 'switch' + (pfPartner ? ' on' : '');
+}
+function savePlace(){
+  const nome = document.getElementById('pfNome').value.trim();
+  if(!nome){ toast('Dê um nome ao lugar.'); return; }
+  const data = {
+    categoria: document.getElementById('pfCategoria').value,
+    nome,
+    descricao: document.getElementById('pfDesc').value.trim(),
+    endereco: document.getElementById('pfEndereco').value.trim(),
+    lat: parseFloat(document.getElementById('pfLat').value) || null,
+    lng: parseFloat(document.getElementById('pfLng').value) || null,
+    fotos: pfPhotos,
+    parceiro: pfPartner,
+    tags: [],
+    exemplo: false,
+  };
+  if(adminEditingId){
+    const idx = places.findIndex(p=>p.id===adminEditingId);
+    places[idx] = { ...places[idx], ...data };
+  } else {
+    places.push({ id:'p'+Date.now(), avaliacoes:[], ...data });
+  }
+  savePlaces(places);
+  closeModal('placeFormModal');
+  renderAdmin();
+  toast('Lugar salvo com sucesso.');
+}
+function deletePlace(id){
+  if(!confirm('Remover este lugar do app?')) return;
+  places = places.filter(p=>p.id!==id);
+  window.MovaFirebase.deleteDocIn('places', id);
+  renderAdmin();
+}
+
+/* ---------------- TOAST ---------------- */
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+
+</script>
+</body>
+</html>
